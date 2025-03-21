@@ -98,35 +98,48 @@ const gameMechanics = (() => {
     // create the current player
     const currentPlayer = player.createPlayer(0, 3);
 
+    const gameRestart = () => {
+        gameInProgress = true;
+        currentPlayer.playerLives = 3;
+        currentPlayer.playerScore = 0;
+        gameScreen.randomizedArray()
+        gameScreen.display();
+        UIcontroller.renderScore(`Score: <br> ${currentPlayer.playerScore}<br>`);
+        UIcontroller.renderLives(`Lives: <br> ${currentPlayer.playerLives}`);
+        document.querySelector("#simon").textContent = "Simon Says!";
+        document.querySelector("#start").textContent = "Play Game";
+        playerChoices = [];
+        return true
+    }
+
     // event listener that starts the game
     document.querySelector("#start").addEventListener("click", () => {
         if(gameInProgress) return;
+        if(currentPlayer.playerLives===0){
+            gameRestart();
+           
+        } else {
+            gameScreen.randomizedArray()
+            gameScreen.display();
+            gameInProgress = true;
+        }
+            
         
-        gameScreen.randomizedArray()
-        gameScreen.display();
-        gameInProgress = true;
-    })
+    });
 
     // show initial score and lives
     UIcontroller.renderScore(`Score: <br> ${currentPlayer.playerScore}<br>`);
     UIcontroller.renderLives(`Lives: <br> ${currentPlayer.playerLives}`);
     // variable that stores the possible selections
     let options = document.querySelectorAll('.selection');
-    
-    // function that allows the player to restart the game
-    const gameRestart = () => {
-        gameInProgress = true;
-        currentPlayer.playerLives = 3;
-        currentPlayer.playerScore = 0;
-        return true
-    }
-
 
     // function that evaluates if the player has run out of lives
     const evalLives = () => {
         if(currentPlayer.playerLives === 0){
-            document.querySelector("#simon").textContent = "Simon Says: You've Lost!"
+            document.querySelector("#simon").textContent = "Simon Says: You've Lost!";
+            document.querySelector("#start").textContent = "Play Again?";
             gameInProgress = false;
+            
             return true 
         } else {
             return false
