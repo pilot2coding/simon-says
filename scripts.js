@@ -1,3 +1,18 @@
+const UIcontroller = (() => {
+    const renderScore = (message) => {
+        document.querySelector("#score").innerHTML = message;
+    }
+    const renderLives = (message) => {
+        document.querySelector("#lives").innerHTML = message;
+    }
+
+    return{
+        renderScore,
+        renderLives
+    }
+})();
+
+
 const gameScreen = (() => {
     // declare an array of elements
     let elementsArray = ["🔴", "🟡", "🟢", "🔵"];
@@ -51,15 +66,15 @@ const gameScreen = (() => {
     }
 })();
 
-const player = ((/*name*/) => {
-    let playerScore = 0;
-    let playerLives = 3;
-    return {
-        /*name, */
-        playerScore,
-        playerLives
-    }
-
+const player = (() => {
+    const createPlayer = ((name, playerScore, playerLives) =>{
+        return {
+            name,
+            playerScore,
+            playerLives
+        };
+    });
+    return { createPlayer };
 })();
 
 
@@ -70,31 +85,52 @@ const gameMechanics = (() => {
     // state of the game variable 
     let gameInProgress = false;
 
+    // create the current player
+    const currentPlayer = player.createPlayer(document.getElementById("player-name").value, 0, 3);
+
     // event listener that starts the game
     document.querySelector("#start").addEventListener("click", () => {
         if(gameInProgress) return;
-        
+        const dialog = document.getElementById("player-dialog");
+   
+        const currentPlayerInput = document.getElementById("player-name").value;
+        if(currentPlayerInput === ""){
+            alert("Please, enter your name!");
+            return;
+        }
+        dialog.close();
         gameScreen.randomizedArray()
         gameScreen.display();
         gameInProgress = true;
     })
+
+    // show initial score and lives
+    UIcontroller.renderScore(`Score: <br> ${currentPlayer.playerScore}<br>`);
+    UIcontroller.renderLives(`Lives: <br> ${currentPlayer.playerLives}`);
     // variable that stores the possible selections
     let options = document.querySelectorAll('.selection');
     
       // function that evaluates victory for each round
       let evalVictory = () => {
         if(JSON.stringify(playerChoices)===JSON.stringify(gameScreen.getElements())){
-            player.playerScore += (gameScreen.getElementsLength()) * 10;
-            console.log(player.playerScore);
+            currentPlayer.playerScore += (gameScreen.getElementsLength()) * 10;
+            console.log(currentPlayer.playerScore);
             gameScreen.randomizedArray();
             gameScreen.display();
             playerChoices = [];
+            // update the scores and lives
+            UIcontroller.renderScore(`Score: <br> ${currentPlayer.playerScore}<br>`);
+            UIcontroller.renderLives(`Lives: <br> ${currentPlayer.playerLives}`);  
+    
         } else if(playerChoices.length >= gameScreen.getElementsLength() && JSON.stringify(playerChoices)!==JSON.stringify(gameScreen.getElements())) {
-            player.playerLives -= 0.5;
+            currentPlayer.playerLives -= 0.5;
             gameScreen.randomizedArray();
             gameScreen.display();
             playerChoices = [];
-            console.log(player.playerLives);
+            console.log(currentPlayer.playerLives);
+            // update scores and lives
+            UIcontroller.renderScore(`Score: <br> ${currentPlayer.playerScore}<br>`);
+            UIcontroller.renderLives(`Lives: <br> ${currentPlayer.playerLives}`);
         }
     }
 
@@ -113,12 +149,6 @@ const gameMechanics = (() => {
             addChoices(option.textContent);
         })
     })
-
-  
-
-    
-        
-    
 
 })();
 
