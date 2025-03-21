@@ -50,7 +50,7 @@ const gameScreen = (() => {
         }
         setTimeout(()=> {
             htmlScreen.innerHTML = "";
-        }, 5000);
+        }, (selectionArray.length)*1000);
        
     }
     
