@@ -6,6 +6,9 @@ const gameScreen = (() => {
 
     // create a randomizer to pick from the elements array
     let randomizedArray = () => {
+        if(selectionArray != null){ 
+            selectionArray = [];
+        }
         let numberOfChoices = Math.floor(Math.random() * 5) + 3; // ten posible selections, with a minimum of 3
          
 
@@ -83,6 +86,15 @@ const gameMechanics = (() => {
         if(JSON.stringify(playerChoices)===JSON.stringify(gameScreen.getElements())){
             player.playerScore += (gameScreen.getElementsLength()) * 10;
             console.log(player.playerScore);
+            gameScreen.randomizedArray();
+            gameScreen.display();
+            playerChoices = [];
+        } else if(playerChoices.length >= gameScreen.getElementsLength() && JSON.stringify(playerChoices)!==JSON.stringify(gameScreen.getElements())) {
+            player.playerLives -= 0.5;
+            gameScreen.randomizedArray();
+            gameScreen.display();
+            playerChoices = [];
+            console.log(player.playerLives);
         }
     }
 
@@ -93,7 +105,7 @@ const gameMechanics = (() => {
         console.log(playerChoices);
         evalVictory();
         return playerChoices;
-    }
+    } 
     
     // event listener that calls the previous function
     options.forEach(option => {
