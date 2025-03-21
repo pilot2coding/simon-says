@@ -110,8 +110,16 @@ const gameMechanics = (() => {
     // variable that stores the possible selections
     let options = document.querySelectorAll('.selection');
     
-      // function that evaluates victory for each round
-      let evalVictory = () => {
+    // function that evaluates if the player has run out of lives
+    const evalLives = () => {
+        if(currentPlayer.playerLives === 0){
+            document.querySelector("#simon").textContent = "Simon Says: You've Lost!"
+            return
+        }
+    }
+
+    // function that evaluates victory for each round
+    let evalVictory = () => {
         if(JSON.stringify(playerChoices)===JSON.stringify(gameScreen.getElements())){
             currentPlayer.playerScore += (gameScreen.getElementsLength()) * 10;
             console.log(currentPlayer.playerScore);
@@ -123,7 +131,7 @@ const gameMechanics = (() => {
             UIcontroller.renderLives(`Lives: <br> ${currentPlayer.playerLives}`);  
     
         } else if(playerChoices.length >= gameScreen.getElementsLength() && JSON.stringify(playerChoices)!==JSON.stringify(gameScreen.getElements())) {
-            currentPlayer.playerLives -= 0.5;
+            currentPlayer.playerLives -= 1;
             gameScreen.randomizedArray();
             gameScreen.display();
             playerChoices = [];
@@ -136,6 +144,10 @@ const gameMechanics = (() => {
 
     // function that stores the player selections inside the array
     let addChoices = (choice) =>{
+        if(currentPlayer.playerLives <= 0){
+            document.querySelector("#simon").textContent = "Simon Says: You've Lost!"
+            return
+        }
         if(playerChoices.length >= gameScreen.getElementsLength()) return;
         playerChoices.push(choice);
         console.log(playerChoices);
