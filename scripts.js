@@ -1,6 +1,8 @@
 // global variable that shows the machine selection and the player options
 let htmlScreen = document.querySelector("#options-display");
 
+let receiveOptions = false;
+
 const UIcontroller = (() => {
     const renderScore = (message) => {
         document.querySelector("#score").innerHTML = message;
@@ -9,9 +11,14 @@ const UIcontroller = (() => {
         document.querySelector("#lives").innerHTML = message;
     }
 
+    const restartButton = (message) => {
+        document.querySelector("#start").innerHTML = message;
+    }
+
     return{
         renderScore,
-        renderLives
+        renderLives,
+        restartButton
     }
 })();
 
@@ -39,7 +46,7 @@ const gameScreen = (() => {
     
     // function that shows on the screen the selected elements and  
     const display = () => {
-        
+        receiveOptions = false;
         htmlScreen.innerText = "";
 
         for(i=0; i < selectionArray.length; i++){
@@ -50,6 +57,7 @@ const gameScreen = (() => {
         }
         setTimeout(()=> {
             htmlScreen.innerHTML = "";
+            receiveOptions = true;
         }, (selectionArray.length)*1000);
        
     }
@@ -105,10 +113,20 @@ const gameMechanics = (() => {
     // variable that stores the possible selections
     let options = document.querySelectorAll('.selection');
     
+    // function that allows the player to restart the game
+    const gameRestart = () => {
+        gameInProgress = true;
+        currentPlayer.playerLives = 3;
+        currentPlayer.playerScore = 0;
+        return true
+    }
+
+
     // function that evaluates if the player has run out of lives
     const evalLives = () => {
         if(currentPlayer.playerLives === 0){
             document.querySelector("#simon").textContent = "Simon Says: You've Lost!"
+            gameInProgress = false;
             return true 
         } else {
             return false
@@ -138,6 +156,7 @@ const gameMechanics = (() => {
             gameScreen.display();
             playerChoices = [];
             
+            
             console.log(currentPlayer.playerLives);
             // update scores and lives
             
@@ -147,7 +166,7 @@ const gameMechanics = (() => {
     // function that stores the player selections inside the array
     let addChoices = (choice) =>{
     
-        if(playerChoices.length >= gameScreen.getElementsLength()) return;
+        if(playerChoices.length >= gameScreen.getElementsLength() || receiveOptions === false) return;
         playerChoices.push(choice);
            
         htmlScreen.innerHTML = "";
